@@ -41,3 +41,4 @@ jobs:
           registry-password: ${{ secrets.REGISTRY_PASSWORD }}
           name: aci-ems
           location: 'west us'
+          ports: 8000
