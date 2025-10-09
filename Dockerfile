@@ -1,32 +1,28 @@
 # 1. Use official Python base image
 FROM python:3.10-slim
 
-# 2. Set environment variables
+# 2. Basic environment configuration
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# 3. Arguments for Azure Artifacts authentication
-ARG AZ_USERNAME=sandeepbayyam
-ARG AZ_TOKEN=1t1YNF1lTPSenTQCMb2y5sVztc32Rg3aD6jVKyzaTPdpGbwLpFQGJQQJ99BJACAAAAAAAAAAAAAGAZDOiaKn
-ARG FEED_URL=https://pkgs.dev.azure.com/sandeepbayyam/_packaging/pypi-internal/pypi/simple/
+# 3. Allow passing PyPI repo URL from GitHub Actions
+ARG PYPI_REPO_URL
+ENV PIP_EXTRA_INDEX_URL=$PYPI_REPO_URL
 
-# 4. Configure pip to use Azure Artifacts feed
-ENV PIP_EXTRA_INDEX_URL="https://${AZ_USERNAME}:${AZ_TOKEN}@${FEED_URL}"
-
-# 5. Set working directory inside container
+# 4. Set working directory
 WORKDIR /app
 
-# 6. Copy dependency list and install dependencies
+# 5. Install dependencies
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt && \
-    echo "Internal platform packages:" && \
+    echo "\n Installed platform packages:" && \
     pip list | grep platform- || echo "No platform packages found."
 
-# 7. Copy project files into container
+# 6. Copy source code
 COPY . /app/
 
-# 8. Expose port Django will run on
+# 7. Expose port
 EXPOSE 8000
 
-# 9. Default command — run development server
+# 8. Run Django app
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
