@@ -31,7 +31,7 @@ jobs:
       - name: 'Build and Publish to Registry'
         run: |
           docker build \
-            --build-arg PYPI_REPO_URL="https://pypi.org/simple https://${{ secrets.PYPI_USER }}:${{ secrets.PYPI_PASSWORD }}@${{ secrets.PYPI_FEED_URL }}" \
+            --build-arg PYPI_REPO_URL="https://pypi.org/simple https://${{ secrets.PYPI_USER }}:${{ secrets.PYPI_PASSWORD }}@${{ vars.PYPI_FEED_URL }}" \
             -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/ems:latest .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/ems:latest
 
