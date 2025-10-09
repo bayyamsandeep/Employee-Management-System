@@ -1,2 +1,11 @@
 Django
 Pillow
+
+# Platform libraries
+platform-auth
+platform-logger
+platform-healthcheck
+platform-messaging
+platform-retry
+platform-storage
+platform-tracing
