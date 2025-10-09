@@ -1,27 +1,36 @@
-# 1. Use official Python base image
-FROM python:3.10-slim
+FROM python:3.12-slim
+LABEL authors="DigitalDots <support@digitaldots.ai>"
 
-# 2. Basic environment configuration
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# 3. Allow passing PyPI repo URL from GitHub Actions
+# Environment setting
+ENV DEBIAN_FRONTEND=noninteractive
+ENV APP_ENVIRONMENT=production
+ENV PIP_USE_PEP517=true
 ARG PYPI_REPO_URL
-ENV PIP_EXTRA_INDEX_URL=$PYPI_REPO_URL
 
-# 4. Set working directory
+# Software Packages installation
+RUN apt-get update -y \
+    && apt-get install -y build-essential python3-dev libffi-dev libssl-dev libkrb5-dev wget \
+    libgd-dev libssl-dev libxml2 libxml2-dev uuid-dev zlib1g zlib1g-dev \
+    g++ gcc git make musl-dev \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+
+# Application Setup
 WORKDIR /app
 
-# 5. Install dependencies
+# Install dependencies
 COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt && \
+RUN python3 -m pip install --upgrade --no-cache-dir pip
+RUN pip3 install --upgrade --no-cache-dir setuptools wheel
+
+ENV PIP_EXTRA_INDEX_URL=${PYPI_REPO_URL}
+RUN pip3 install --no-cache-dir -r requirements.txt && \
     echo "\n Installed platform packages:" && \
     pip list | grep platform- || echo "No platform packages found."
 
-# 6. Copy source code
+# Copy source code
 COPY . /app/
 
-# 7. Expose port
+# Expose port
 EXPOSE 8000
 
 # 8. Run Django app
