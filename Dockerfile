@@ -19,8 +19,8 @@ WORKDIR /app
 # 6. Copy dependency list and install dependencies
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt && \
-    echo "\n✅ Internal platform packages:" && \
-    pip list | grep platform- || echo "⚠️ No platform packages found."
+    echo "Internal platform packages:" && \
+    pip list | grep platform- || echo "No platform packages found."
 
 # 7. Copy project files into container
 COPY . /app/
